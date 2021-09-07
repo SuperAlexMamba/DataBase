@@ -9,7 +9,8 @@ import UIKit
 
 class MainViewController: UITableViewController {
     
-    let restarauntNames = ["Dumskaya" , "Hathapury" , "KFC" , "Macdonalds" , "Subway" , "Burger King", "Pishki Pirozhki" , "Sindicat"]
+    
+    var places = Place.getPlaces()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,28 +21,43 @@ class MainViewController: UITableViewController {
     // MARK: - Table view data source
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return restarauntNames.count
+        return places.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CustomTableViewCell
+        
+        let place = places[indexPath.row]
 
-        cell.nameOfPlace.text = restarauntNames[indexPath.row]
-        cell.imageOfPlace.image = UIImage(named: restarauntNames[indexPath.row])
+        cell.nameOfPlace.text = place.name
+        cell.locationOfPlace.text = place.place
+        cell.typeOfPlace.text = place.type
+        
+        if place.image == nil {
+            cell.imageOfPlace.image = UIImage(named: places[indexPath.row].restarauntImage!)
+        }
+        else {
+            cell.imageOfPlace.image = place.image
+        }
+        
         cell.imageOfPlace.layer.cornerRadius = cell.imageOfPlace.frame.size.height / 2
         cell.imageOfPlace.clipsToBounds = true
 
         return cell
     }
     
+    @IBAction func unwindSegue(_ segue: UIStoryboardSegue){
+        
+        guard let newPlaceVC = segue.source as? NewPlaceViewController else  {return}
+        
+        newPlaceVC.saveNewPlace()
+        places.append(newPlaceVC.newPlace!)
+        tableView.reloadData()
+        
+    }
+    
     // MARK: - TableViewDelegate
     
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 85
-    }
-
-
-
     /*
     // MARK: - Navigation
 
@@ -51,5 +67,7 @@ class MainViewController: UITableViewController {
         // Pass the selected object to the new view controller.
     }
     */
+    
+//    @IBAction func cancelAction(
 
 }
