@@ -9,8 +9,9 @@ import UIKit
 
 class NewPlaceViewController: UITableViewController {
     
-    var newPlace : Place?
+    var imageIsChanged = false
 
+    
     @IBOutlet weak var placeImage: UIImageView!
     @IBOutlet weak var addButton: UIBarButtonItem!
     @IBOutlet weak var placeName: UITextField!
@@ -19,11 +20,9 @@ class NewPlaceViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+                
         tableView.tableFooterView = UIView()
-        
         addButton.isEnabled = false
-        
         placeName.addTarget(self, action: #selector(textFieldChanged), for: .editingChanged)
 
     }
@@ -68,8 +67,25 @@ class NewPlaceViewController: UITableViewController {
     
     func saveNewPlace() {
         
-        newPlace = Place(name: placeName.text!, place: placeLocation.text, type: placeType.text, restarauntImage: nil, image: placeImage.image)
+        let newPlace = Place()
         
+        var image: UIImage?
+        
+        if imageIsChanged {
+            image = placeImage.image
+        } else {
+            image = #imageLiteral(resourceName: "photo")
+        }
+        
+        let imageData = image?.pngData()
+        
+        newPlace.imageData = imageData
+        newPlace.name = placeName.text!
+        newPlace.place = placeLocation.text
+        newPlace.type = placeType.text
+        
+         
+        StorageManager.saveObj(newPlace)
     }
 
     
@@ -119,9 +135,12 @@ extension NewPlaceViewController : UIImagePickerControllerDelegate , UINavigatio
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
+        
+        
         placeImage.image = info[.editedImage] as? UIImage
         placeImage.contentMode = .scaleAspectFill
         placeImage.clipsToBounds = true
+        imageIsChanged = true
         dismiss(animated: true)
         
     }
