@@ -11,12 +11,21 @@ let realm = try! Realm()
 
 class StorageManager {
     
-    static func saveObj(_ place: Place){
+    static func saveObj(_ place : Place){
         
         try! realm.write{
+            
             realm.add(place)
+            
         }
         
+    }
+    static func deleteObj(_ place: Place){
+        
+        try! realm.write{
+            
+            realm.delete(place)
+        }
     }
     
 }
